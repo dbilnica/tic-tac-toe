@@ -1,3 +1,4 @@
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Main {
@@ -16,9 +17,11 @@ public class Main {
         player2Name = scanner.nextLine();
         System.out.println("Player " + player2Name + " has been set symbol '0'");
 
-        while (ended == false) {
+        while (!ended) {
             clearConsole();
+            String hitEnter = "Please hit ENTER to continue...";
             char symbol;
+
             if (player) {
                 symbol = 'X';
                 System.out.println("It's " + player1Name + "'s turn!");
@@ -27,23 +30,32 @@ public class Main {
                 System.out.println("It's " + player2Name + "'s turn!");
             }
             printBoard(matrix2D);
-            System.out.println("Enter row in matrix (1-3)");
-            row = scanner.nextInt();
-            System.out.println("Enter column in matrix (1-3)");
-            col = scanner.nextInt();
-            if(row < 0 || row > 3 || col < 0 || col > 3) {
-                System.out.println("Invalid move! Try again.");
+            try{
+                System.out.println("Enter row in matrix (1-3)");
+                row = scanner.nextInt();
+                System.out.println("Enter column in matrix (1-3)");
+                col = scanner.nextInt();
+                if(row < 0 || row > 3 || col < 0 || col > 3) {
+                    System.out.println(hitEnter);
+                    scanner.nextLine();
+                    System.out.println();
+                    scanner.nextLine();
+                    continue;
+                }
+                if (positionUsed(matrix2D, row, col)) {
+                    scanner.nextLine();
+                    System.out.println(hitEnter);
+                    scanner.nextLine();
+                    continue;
+                }
+            } catch(InputMismatchException e){
+                System.out.println("Invalid input. Please enter numbers only.");
                 scanner.nextLine();
-                System.out.println("Please hit ENTER to continue...");
+                System.out.println(hitEnter);
                 scanner.nextLine();
                 continue;
             }
-            if (positionUsed(matrix2D, row, col)) {
-                scanner.nextLine();
-                System.out.println("Please hit ENTER to continue...");
-                scanner.nextLine();
-                continue;
-            }
+
             player = makeMove(row, col, matrix2D, player, symbol);
             ended = playerWin(matrix2D, symbol, player1Name, player2Name);
             if (isDraw(matrix2D)) {
