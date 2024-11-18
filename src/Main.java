@@ -24,27 +24,17 @@ public class Main {
             row = scanner.nextInt();
             System.out.println("Enter column in matrix");
             col = scanner.nextInt();
-            if(positionUsed(matrix2D, row, col)){
+            if (positionUsed(matrix2D, row, col)) {
                 continue;
             }
             char symbol;
-            if(player) {
+            if (player) {
                 symbol = 'X';
             } else {
                 symbol = 'O';
             }
-
-            if (row < (matrix2D.length + 1) && col < (matrix2D.length + 1)) {
-                if (player) {
-                    matrix2D[row - 1][col - 1] = symbol;
-                    player = false;
-                } else {
-                    matrix2D[row - 1][col - 1] = symbol;
-                    player = true;
-                }
-
-            }
-
+            player = makeMove(row, col, matrix2D, player, symbol);
+            ended = playerWin(matrix2D, symbol, player1Name, player2Name);
         }
 
     }
@@ -67,12 +57,58 @@ public class Main {
     }
 
     public static boolean positionUsed(char[][] matrix2D, int row, int col) {
-        if(matrix2D[row-1][col-1] != ' ') {
+        if (matrix2D[row - 1][col - 1] != ' ') {
             System.out.println("This field is already in use!");
             return true;
         }
-        return  false;
+        return false;
     }
 
-    // public static boolean na (row < (matrix2D.length + 1) && col < (matrix2D.length + 1))
+    public static boolean makeMove(int row, int col, char[][] matrix2D, boolean player, char symbol) {
+        if (row < (matrix2D.length + 1) && col < (matrix2D.length + 1)) {
+            matrix2D[row - 1][col - 1] = symbol;
+            return !player;
+        }
+        return player;
+    }
+
+    public static boolean playerWin(char[][] matrix2D, char symbol, String player1Name, String player2Name) {
+        for (int i = 0; i < matrix2D.length; i++) {
+            for (int j = 0; j < matrix2D.length; j++) {
+                if (j == 0 && matrix2D[i][j] == symbol
+                        && matrix2D[i][j + 1] == symbol
+                        && matrix2D[i][j + 2] == symbol) {
+                    winnerName(symbol, player1Name, player2Name);
+                    return true;
+                }
+                if (i == 0 && matrix2D[i][j] == symbol
+                        && matrix2D[i + 1][j] == symbol
+                        && matrix2D[i + 2][j] == symbol) {
+                    winnerName(symbol, player1Name, player2Name);
+                    return true;
+                }
+                if (i == 0 && j == 0
+                        && matrix2D[i][j] == symbol
+                        && matrix2D[i + 1][j + 1] == symbol
+                        && matrix2D[i + 2][j + 2] == symbol) {
+                    winnerName(symbol, player1Name, player2Name);
+                    return true;
+                }
+                if (i == 0 && j == 2
+                        && matrix2D[i][j] == symbol
+                        && matrix2D[i + 1][j - 1] == symbol
+                        && matrix2D[i + 2][j - 2] == symbol) {
+                    winnerName(symbol, player1Name, player2Name);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static void winnerName(char symbol, String player1Name, String player2Name) {
+        if (symbol == 'X') {
+            System.out.println("The Winner is: " + player1Name);
+        } else System.out.println("The Winner is: " + player2Name);
+    }
 }
