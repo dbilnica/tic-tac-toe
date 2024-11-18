@@ -3,43 +3,59 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         char[][] matrix2D = new char[3][3];
-        for (int i = 0; i < matrix2D.length; i++) {
-            for (int j = 0; j < matrix2D.length; j++) {
-                matrix2D[i][j] = ' ';
-            }
-        }
+        initializeBoard(matrix2D);
         boolean player = true, ended = false;
         String player1Name, player2Name;
         Scanner scanner = new Scanner(System.in);
         int row = 0, col = 0;
+
         System.out.println("Enter first player name: ");
         player1Name = scanner.nextLine();
-        System.out.println("Player " + player1Name + " has been setted symbol 'X'");
+        System.out.println("Player " + player1Name + " has been set symbol 'X'");
         System.out.println("Enter second player name: ");
         player2Name = scanner.nextLine();
-        System.out.println("Player " + player2Name + " has been setted symbol '0'");
+        System.out.println("Player " + player2Name + " has been set symbol '0'");
+
         while (ended == false) {
-            printMatrix(matrix2D);
-            System.out.println("Enter row in matrix");
-            row = scanner.nextInt();
-            System.out.println("Enter column in matrix");
-            col = scanner.nextInt();
-            if (positionUsed(matrix2D, row, col)) {
-                continue;
-            }
+            clearConsole();
             char symbol;
             if (player) {
                 symbol = 'X';
+                System.out.println("It's " + player1Name + "'s turn!");
             } else {
                 symbol = 'O';
+                System.out.println("It's " + player2Name + "'s turn!");
+            }
+            printBoard(matrix2D);
+            System.out.println("Enter row in matrix (1-3)");
+            row = scanner.nextInt();
+            System.out.println("Enter column in matrix (1-3)");
+            col = scanner.nextInt();
+            if(row < 0 || row > 3 || col < 0 || col > 3) {
+                System.out.println("Invalid move! Try again.");
+                scanner.nextLine();
+                System.out.println("Please hit ENTER to continue...");
+                scanner.nextLine();
+                continue;
+            }
+            if (positionUsed(matrix2D, row, col)) {
+                scanner.nextLine();
+                System.out.println("Please hit ENTER to continue...");
+                scanner.nextLine();
+                continue;
             }
             player = makeMove(row, col, matrix2D, player, symbol);
             ended = playerWin(matrix2D, symbol, player1Name, player2Name);
+            if (isDraw(matrix2D)) {
+                clearConsole();
+                printBoard(matrix2D);
+                System.out.println("It's a draw!");
+            }
         }
 
     }
 
-    public static void printMatrix(char[][] matrix2D) {
+    public static void printBoard(char[][] matrix2D) {
         for (int i = 0; i < matrix2D.length; i++) {
             for (int j = 0; j < matrix2D.length; j++) {
                 if (j == 1) {
@@ -50,7 +66,7 @@ public class Main {
 
             }
             if (i < matrix2D.length - 1) {
-                System.out.println("\n" + " - + - + -");
+                System.out.println("\n" + "---+---+---");
             }
         }
         System.out.println("\n");
@@ -58,7 +74,7 @@ public class Main {
 
     public static boolean positionUsed(char[][] matrix2D, int row, int col) {
         if (matrix2D[row - 1][col - 1] != ' ') {
-            System.out.println("This field is already in use!");
+            System.out.println("This game field is already in use! \n You have to choose different one!");
             return true;
         }
         return false;
@@ -75,29 +91,26 @@ public class Main {
     public static boolean playerWin(char[][] matrix2D, char symbol, String player1Name, String player2Name) {
         for (int i = 0; i < matrix2D.length; i++) {
             for (int j = 0; j < matrix2D.length; j++) {
-                if (j == 0 && matrix2D[i][j] == symbol
+                if ((j == 0 && matrix2D[i][j] == symbol
                         && matrix2D[i][j + 1] == symbol
-                        && matrix2D[i][j + 2] == symbol) {
-                    winnerName(symbol, player1Name, player2Name);
-                    return true;
-                }
-                if (i == 0 && matrix2D[i][j] == symbol
+                        && matrix2D[i][j + 2] == symbol) || (i == 0 && matrix2D[i][j] == symbol
                         && matrix2D[i + 1][j] == symbol
-                        && matrix2D[i + 2][j] == symbol) {
+                        && matrix2D[i + 2][j] == symbol)) {
+                    clearConsole();
+                    printBoard(matrix2D);
                     winnerName(symbol, player1Name, player2Name);
                     return true;
                 }
-                if (i == 0 && j == 0
+
+                if ((i == 0 && j == 0
                         && matrix2D[i][j] == symbol
                         && matrix2D[i + 1][j + 1] == symbol
-                        && matrix2D[i + 2][j + 2] == symbol) {
-                    winnerName(symbol, player1Name, player2Name);
-                    return true;
-                }
-                if (i == 0 && j == 2
+                        && matrix2D[i + 2][j + 2] == symbol) || (i == 0 && j == 2
                         && matrix2D[i][j] == symbol
                         && matrix2D[i + 1][j - 1] == symbol
-                        && matrix2D[i + 2][j - 2] == symbol) {
+                        && matrix2D[i + 2][j - 2] == symbol)) {
+                    clearConsole();
+                    printBoard(matrix2D);
                     winnerName(symbol, player1Name, player2Name);
                     return true;
                 }
@@ -106,9 +119,35 @@ public class Main {
         return false;
     }
 
+    public static boolean isDraw(char[][] matrix2D) {
+        for (int i = 0; i < matrix2D.length; i++) {
+            for (int j = 0; j < matrix2D.length; j++) {
+                if (matrix2D[i][j] == ' ') {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public static void winnerName(char symbol, String player1Name, String player2Name) {
         if (symbol == 'X') {
             System.out.println("The Winner is: " + player1Name);
         } else System.out.println("The Winner is: " + player2Name);
     }
+
+    public static void initializeBoard(char[][] matrix2D) {
+        for (int i = 0; i < matrix2D.length; i++) {
+            for (int j = 0; j < matrix2D.length; j++) {
+                matrix2D[i][j] = ' ';
+            }
+        }
+    }
+
+    public static void clearConsole() {
+        for (int i = 0; i < 50; i++) {
+            System.out.println();
+        }
+    }
+
 }
